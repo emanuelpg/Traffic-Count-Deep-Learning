@@ -5,12 +5,14 @@ import os, sys
 
 class VideoProcessing:
     def __init__(self, video_path):
-        self.video = cv2.VideoCapture(video_path)
-        self.frames = self.frame_extraction()
-        self.fps = self.video.get(cv2.CAP_PROP_FPS)
-        self.frame_count = self.video.get(cv2.CAP_PROP_FRAME_COUNT)
-        self.duration = self.frame_count / self.fps
-
+        try:
+            self.video = cv2.VideoCapture(video_path)
+            self.frames = self.frame_extraction()
+            self.fps = self.video.get(cv2.CAP_PROP_FPS)
+            self.frame_count = self.video.get(cv2.CAP_PROP_FRAME_COUNT)
+            self.duration = self.frame_count / self.fps
+        except:
+            print("Error trying to open video, do something")
     def get_frames(self):
         return self.frames
 
