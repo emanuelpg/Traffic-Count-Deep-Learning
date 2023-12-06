@@ -1,7 +1,6 @@
 import Vehicle
 import VideoProcessing
 
-
 class Tracker:
     vehicle_cats = ["car", "bus", "truck", "motorcycle"]
 
@@ -29,23 +28,27 @@ class Tracker:
         id_num = 0
         count = 0
         video = VideoProcessing.VideoProcessing(video_path)
+        frame_qt = video.get_frame_count()
         for frame in video.get_frames():
             Vehicle.Vehicle.reset_found()
             count += 1
+            print(f"Frame {count} of {int(frame_qt)}")
             boxes = self.detection_boxes(frame)
             for box in boxes:
-                x, y = self.find_center(box.xyxy[0])
-                if count == 1 and self.get_classes_names()[int(box.cls)] in Tracker.vehicle_cats:
-                    Vehicle.Vehicle(x, y, id_num)
-                    id_num += 1
-                elif self.get_classes_names()[int(box.cls)] in Tracker.vehicle_cats:
-                    vehicle_found = Vehicle.Vehicle.search_vehicle_position(x, y)
-                    if vehicle_found is None:
-                        Vehicle.Vehicle(x, y, id_num)
+                x, y = Tracker.find_center(boxes.xyxy[0])
+                if y > 400:
+                    if count == 1 and self.get_classes_names()[int(box.cls)] in Tracker.vehicle_cats:
+                        Vehicle.Vehicle(box, id_num)
                         id_num += 1
-                    else:
-                        vehicle_found.update_pos(x, y)
-                        vehicle_found.set_found(1)
-            if count % 50 == 0:  # Delete vehicles that weren't found on the screen anymore
+                    elif self.get_classes_names()[int(box.cls)] in Tracker.vehicle_cats:
+                        vehicle_found = Vehicle.Vehicle.search_vehicle_box(box)
+                        if vehicle_found is None:
+                            Vehicle.Vehicle(box, id_num)
+                            id_num += 1
+                        else:
+                            vehicle_found.update_box(box)
+                            vehicle_found.set_found(1)
+            print("Number of vehicles by now:", id_num+1)
+            if count % 100 == 0:  # Delete vehicles that weren't found on the screen anymore
                 Vehicle.Vehicle.delete_missing()
         return id_num+1

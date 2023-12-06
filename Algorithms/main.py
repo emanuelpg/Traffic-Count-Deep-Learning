@@ -1,21 +1,21 @@
 from ultralytics import YOLO
-import cv2
-import numpy as np
-import sys, os
-import VideoProcessing
-import SupplyFunctions
+import os
+import time
 import Tracker
 
 
 def solver(parent_dir):
     detection_model = YOLO('yolov8n.pt')
     tracker = Tracker.Tracker(detection_model)
-    videos = []
     count = 1
     for video_name in os.listdir(parent_dir):
-        print(f"Counting vehicles in video {count}...")
+        print(f"Counting vehicles in video {count}, please wait...")
         video_path = parent_dir + video_name
+        start = time.time()
         print(f"Number of Vehicles in video {count}: {tracker.track(video_path)} vehicles")
+        end = time.time()
+        time_diff = end - start
+        print("Counting video %d took %.4f minutes" % (count, time_diff/60))
         count += 1
 
 
