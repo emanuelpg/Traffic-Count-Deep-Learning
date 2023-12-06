@@ -107,8 +107,8 @@ class Vehicle:
                             box2_xyxy[2] - box1_xyxy[0]) *
                         min(box1_xyxy[3] - box2_xyxy[1],
                             box2_xyxy[3] - box1_xyxy[1]))
-
-        return intersection / union
+        iou = intersection / (union - intersection)
+        return iou
 
     @staticmethod
     def compare_vehicles_iou(box, v1, v2):
@@ -129,7 +129,7 @@ class Vehicle:
             return best
         for vehicle in Vehicle.all:
             v_box = vehicle.get_box_pos()
-            if Vehicle.intersection_over_union(box, v_box) > 0:
+            if Vehicle.intersection_over_union(box, v_box) > 0.2:
                 if best is None:
                     best = vehicle
                 else:

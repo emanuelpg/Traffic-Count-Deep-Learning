@@ -1,5 +1,6 @@
 import Vehicle
 import VideoProcessing
+import cv2
 
 class Tracker:
     vehicle_cats = ["car", "bus", "truck", "motorcycle"]
@@ -7,6 +8,19 @@ class Tracker:
     def __init__(self, detection_model):
         self.model = detection_model
         self.model_names = self.model.names
+
+    def video_det_viewer(self, video_path, video_name):
+        video = cv2.VideoCapture(video_path)
+        ret, frame = video.read()
+        while ret:
+            result = self.model(frame)[0]
+            im_array = result.plot()
+            cv2.imshow(video_name, im_array)
+            cv2.waitKey(40)
+
+            ret, frame = video.read()
+        cv2.destroyAllWindows()
+
 
     def get_classes_names(self):
         return self.model_names
@@ -28,11 +42,9 @@ class Tracker:
         id_num = 0
         count = 0
         video = VideoProcessing.VideoProcessing(video_path)
-        frame_qt = video.get_frame_count()
         for frame in video.get_frames():
             Vehicle.Vehicle.reset_found()
             count += 1
-            print(f"Frame {count} of {int(frame_qt)}")
             boxes = self.detection_boxes(frame)
             for box in boxes:
                 x, y = Tracker.find_center(boxes.xyxy[0])
@@ -48,7 +60,6 @@ class Tracker:
                         else:
                             vehicle_found.update_box(box)
                             vehicle_found.set_found(1)
-            print("Number of vehicles by now:", id_num+1)
-            if count % 100 == 0:  # Delete vehicles that weren't found on the screen anymore
+            if count % (int(video.get_fps())*10) == 0:  # Delete vehicles that weren't found on the screen anymore
                 Vehicle.Vehicle.delete_missing()
         return id_num+1
