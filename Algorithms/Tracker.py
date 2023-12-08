@@ -2,6 +2,7 @@ import Vehicle
 import VideoProcessing
 import cv2
 
+
 class Tracker:
     vehicle_cats = ["car", "bus", "truck", "motorcycle"]
 
@@ -21,7 +22,6 @@ class Tracker:
             ret, frame = video.read()
         cv2.destroyAllWindows()
 
-
     def get_classes_names(self):
         return self.model_names
 
@@ -38,7 +38,7 @@ class Tracker:
         mid_y = int(boxe_xyxy[1] + (boxe_xyxy[3] - boxe_xyxy[1])/2)
         return mid_x, mid_y
 
-    def track(self, video_path):
+    def track(self, video_path, iou_th=0.2):
         id_num = 0
         count = 0
         video = VideoProcessing.VideoProcessing(video_path)
@@ -48,12 +48,12 @@ class Tracker:
             boxes = self.detection_boxes(frame)
             for box in boxes:
                 x, y = Tracker.find_center(boxes.xyxy[0])
-                if y > 400:
+                if y > 450:
                     if count == 1 and self.get_classes_names()[int(box.cls)] in Tracker.vehicle_cats:
                         Vehicle.Vehicle(box, id_num)
                         id_num += 1
                     elif self.get_classes_names()[int(box.cls)] in Tracker.vehicle_cats:
-                        vehicle_found = Vehicle.Vehicle.search_vehicle_box(box)
+                        vehicle_found = Vehicle.Vehicle.search_vehicle_box(box, iou_th)
                         if vehicle_found is None:
                             Vehicle.Vehicle(box, id_num)
                             id_num += 1

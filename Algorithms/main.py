@@ -2,6 +2,8 @@ from ultralytics import YOLO
 import os
 import time
 import Tracker
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def solver(parent_dir):
@@ -20,6 +22,28 @@ def solver(parent_dir):
         print("Counting video %d took %.4f minutes" % (count, time_diff/60))
         count += 1
 
-videos_dir = "D:/Traffic-Count-Deep-Learning/Dataset Atividade/"
 
+def measuring_iou_th(video_path):
+    detection_model = YOLO('yolov8n.pt')
+    tracker = Tracker.Tracker(detection_model)
+    ths = np.linspace(0, 1, num=11)
+    counts = []
+    for th in ths:
+        print("Counting for iou_th =", th)
+        value = tracker.track(video_path, iou_th=th)
+        print("Vehicle count:", value)
+        counts.append(value)
+
+    # Plotting results
+    plt.plot(ths, counts)
+    plt.xlabel("iou threshold")
+    plt.ylabel("Vehicle count")
+    plt.title("Graphic of iou_threshold x vehicle count")
+    plt.show()
+
+
+videos_dir = "D:/Traffic-Count-Deep-Learning/Dataset Atividade/"
+video1_path = videos_dir + os.listdir(videos_dir)[0]
+
+# measuring_iou_th(video1_path)
 solver(videos_dir)

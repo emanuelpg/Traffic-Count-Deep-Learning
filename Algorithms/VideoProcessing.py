@@ -13,6 +13,7 @@ class VideoProcessing:
             self.duration = self.frame_count / self.fps
         except:
             print("Error trying to open video, do something")
+
     def get_frames(self):
         return self.frames
 

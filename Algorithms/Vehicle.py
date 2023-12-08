@@ -103,11 +103,11 @@ class Vehicle:
             return 0.
 
         union = area1 + area2
-        intersection = (min(box1_xyxy[2] - box2_xyxy[0],
-                            box2_xyxy[2] - box1_xyxy[0]) *
-                        min(box1_xyxy[3] - box2_xyxy[1],
-                            box2_xyxy[3] - box1_xyxy[1]))
-        iou = intersection / (union - intersection)
+        intersection = (min(abs(box1_xyxy[2] - box2_xyxy[0]),
+                            abs(box2_xyxy[2] - box1_xyxy[0])) *
+                        min(abs(box1_xyxy[3] - box2_xyxy[1]),
+                            abs(box2_xyxy[3] - box1_xyxy[1])))
+        iou = intersection / union
         return iou
 
     @staticmethod
@@ -122,14 +122,14 @@ class Vehicle:
             return v2
 
     @staticmethod
-    def search_vehicle_box(box):
+    def search_vehicle_box(box, iou_th=0.2):
         best = None
         if Vehicle.vehicle_count() == 0:
             print("Error: There's no vehicle to search")
             return best
         for vehicle in Vehicle.all:
             v_box = vehicle.get_box_pos()
-            if Vehicle.intersection_over_union(box, v_box) > 0.2:
+            if Vehicle.intersection_over_union(box, v_box) > iou_th:
                 if best is None:
                     best = vehicle
                 else:
