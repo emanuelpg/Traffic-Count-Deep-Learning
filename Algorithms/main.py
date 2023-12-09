@@ -6,6 +6,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+# Solver: Count the number of vehicles on some given videos.
+# Input: Directory path where all videos are present.
+# Output: Vehicle count for each video inside the input directory.
 def solver(parent_dir):
     detection_model = YOLO('yolov8n.pt')
     tracker = Tracker.Tracker(detection_model)
@@ -23,6 +26,7 @@ def solver(parent_dir):
         count += 1
 
 
+# Function used to measure the effect of different thresholds for IoU measurement
 def measuring_iou_th(video_path):
     detection_model = YOLO('yolov8n.pt')
     tracker = Tracker.Tracker(detection_model)

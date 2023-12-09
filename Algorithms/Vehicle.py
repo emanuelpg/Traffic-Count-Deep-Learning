@@ -91,6 +91,7 @@ class Vehicle:
         area = (box_xyxy[2] - box_xyxy[0]) * (box_xyxy[3] - box_xyxy[1])
         return area
 
+    # Find the iou measurement of two given boxes
     @staticmethod
     def intersection_over_union(box1, box2):
         box1_xyxy = box1.xyxy[0]
@@ -121,12 +122,14 @@ class Vehicle:
         else:
             return v2
 
+    # Search the vehicle in all list that fits better a given box based on iou measurement.
     @staticmethod
-    def search_vehicle_box(box, iou_th=0.1):
-        best = None
+    def search_vehicle_box(box, iou_th=0.):
+        best = None  # Define variable to return
         if Vehicle.vehicle_count() == 0:
             print("Error: There's no vehicle to search")
             return best
+        # Finds best vehicle that satisfy the threshold in the list.
         for vehicle in Vehicle.all:
             v_box = vehicle.get_box_pos()
             if Vehicle.intersection_over_union(box, v_box) > iou_th:
@@ -136,6 +139,7 @@ class Vehicle:
                     best = Vehicle.compare_vehicles_iou(box, vehicle, best)
         return best
 
+    # Search the vehicle in all list that is closer to a given position.
     @staticmethod
     def search_vehicle_position(x, y):
         th = 50  # threshold of minimal distance

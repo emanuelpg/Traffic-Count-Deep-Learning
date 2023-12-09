@@ -26,6 +26,7 @@ class VideoProcessing:
     def get_duration(self):
         return self.duration
 
+    # Visualize the video
     def video_viewer(self):
         frame_rate = self.get_fps()
         waiting_time = int(1/frame_rate * 1000)
@@ -35,6 +36,7 @@ class VideoProcessing:
 
         cv2.destroyAllWindows()
 
+    # Extract the frames of the video
     def frame_extraction(self):
         frames = []
         self.video.set(cv2.CAP_PROP_POS_FRAMES, 0)
@@ -45,6 +47,7 @@ class VideoProcessing:
 
         return np.array(frames)
 
+    # Saves the frames of the video in a given folder
     def frame_saving(self, folder_path):
         count = 0
         for frame in self.get_frames():

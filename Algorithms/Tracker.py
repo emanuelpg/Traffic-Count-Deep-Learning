@@ -39,27 +39,32 @@ class Tracker:
         return mid_x, mid_y
 
     def track(self, video_path, iou_th=0.2):
-        id_num = 0
-        count = 0
-        video = VideoProcessing.VideoProcessing(video_path)
+        id_num = 0  # Variable to "name" vehicles and count them
+        count = 0  # Variable to count the number of frames
+        video = VideoProcessing.VideoProcessing(video_path)  # Video to apply tracker
+
+        # Update tracker in each frame
         for frame in video.get_frames():
-            Vehicle.Vehicle.reset_found()
+            Vehicle.Vehicle.reset_found()  # Set all existing vehicles as not found
             count += 1
-            boxes = self.detection_boxes(frame)
+            boxes = self.detection_boxes(frame)  # Detect bounding boxes of objects present in the frame
             for box in boxes:
                 x, y = Tracker.find_center(boxes.xyxy[0])
-                if y > 450:
+                if 400 < y < 500:  # Count objects only in a pre-defined region
+                    # If it's the first frame, add all vehicles to list
                     if count == 1 and self.get_classes_names()[int(box.cls)] in Tracker.vehicle_cats:
                         Vehicle.Vehicle(box, id_num)
                         id_num += 1
                     elif self.get_classes_names()[int(box.cls)] in Tracker.vehicle_cats:
-                        vehicle_found = Vehicle.Vehicle.search_vehicle_box(box, iou_th)
+                        vehicle_found = Vehicle.Vehicle.search_vehicle_box(box, iou_th)  # Search compatible vehicle
+                        # Update vehicle if it's found otherwise add a new one
                         if vehicle_found is None:
                             Vehicle.Vehicle(box, id_num)
                             id_num += 1
                         else:
                             vehicle_found.update_box(box)
                             vehicle_found.set_found(1)
-            if count % (int(video.get_fps())*10) == 0:  # Delete vehicles that weren't found on the screen anymore
+            # Delete vehicles that weren't found on the screen anymore for each 10 seconds.
+            if count % (int(video.get_fps())*10) == 0:
                 Vehicle.Vehicle.delete_missing()
         return id_num+1
