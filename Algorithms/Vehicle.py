@@ -122,7 +122,7 @@ class Vehicle:
             return v2
 
     @staticmethod
-    def search_vehicle_box(box, iou_th=0.2):
+    def search_vehicle_box(box, iou_th=0.1):
         best = None
         if Vehicle.vehicle_count() == 0:
             print("Error: There's no vehicle to search")
